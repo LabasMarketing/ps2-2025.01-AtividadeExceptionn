@@ -28,7 +28,7 @@ public class UserInterface {
         System.out.print("opção > ");
     }
 
-    public void start() {
+    public void start() throws InsufficientFoundsException {
         welcome();
         if (account == null)
             return;
@@ -60,20 +60,50 @@ public class UserInterface {
             }
         }
     }
-
-    private void deposit() {
-        System.out.print("\nInforme o valor a ser depositado: ");
-        double value = readValue();
-        account.deposit(value);
-        System.out.println("Desposito realizado com sucesso.");
+/**
+ * Realiza um depósito na conta bancária com saldo de ({@link balance}).
+ * 
+ * @var value que mostra o valor a ser depositado.
+ * 
+ * @var balance que mostra o saldo da conta.
+ * 
+ * @throws IllegalArgumentException se o valor do depósito for negativo.
+ */
+private void deposit() {
+    System.out.print("\nInforme o valor a ser depositado: ");
+    double value = readValue();
+    // Verificação se o valor do depósito é maior que 0 //
+    if (value < 0) {
+        throw new IllegalArgumentException("O valor do depósito não pode ser negativo.");
     }
+    account.deposit(value);
+    System.out.println("Depósito realizado com sucesso.");
+}
 
-    private void withdraw() {
-        System.out.print("\nInforme o valor a ser sacado: ");
-        double value = readValue();
-        account.withdraw(value); // pode dar problema
+/**
+ * Realiza um depósito na conta bancária com saldo de ({@link balance}).
+ * 
+ * @var value que mostra o valor a ser depositado.
+ * 
+ * @var balance que mostra o saldo da conta.
+ * 
+ * @throws IllegalArgumentException     se o valor do saque for negativo.
+ * @throws InsufficientFoundsException se o saldo for insuficiente para o saque.
+ */
+private void withdraw() throws InsufficientFoundsException {
+    System.out.print("\nInforme o valor a ser sacado: ");
+    double value = readValue();
+    if (value < 0) {
+        throw new IllegalArgumentException("O valor do saque não pode ser negativo");
+    }
+    if (value <= account.getBalance()) {
+        account.withdraw(value);
         System.out.println("Saque realizado com sucesso");
+    } else {
+        throw new InsufficientFoundsException("O valor de " + value + " do saque não pode ser executado, você só tem " + account.getBalance() + " na conta");
     }
+}
+
 
     private int readOption() {
         String choiceString = input.nextLine();
